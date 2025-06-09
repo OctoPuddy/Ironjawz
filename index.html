@@ -108,6 +108,30 @@
      display: block;
      cursor: pointer;
    }
+   
+   /* Style spécial pour la case 7 avec 2 vignettes empilées */
+   .split-slot {
+     display: flex;
+     flex-direction: column;
+     gap: 2%;
+   }
+   
+   .split-slot .half-slot {
+     height: 49%;
+     overflow: hidden;
+     display: flex;
+     justify-content: center;
+     position: relative;
+   }
+   
+   .split-slot .half-slot img {
+     width: 100%;
+     height: 100%;
+     object-fit: contain;
+     display: block;
+     cursor: pointer;
+   }
+   
    .separator {
      display: flex;
      align-items: center;
@@ -189,7 +213,6 @@
 }
 
 /* Style pour les badges sur les vignettes du haut */
-/* Style pour les badges sur les vignettes du haut */
 .top-card-slot .unit-badge {
   position: absolute;
   bottom: 5px;
@@ -242,6 +265,10 @@
    #popup-spells {
      grid-template-columns: repeat(3, 1fr) !important;
    }
+   /* Style pour le popup des prayers avec 3 colonnes */
+   #popup-prayers {
+     grid-template-columns: repeat(3, 1fr) !important;
+   }
    /* Style pour le popup des badges */
    #popup-badges {
      grid-template-columns: repeat(2, 1fr) !important;
@@ -261,13 +288,6 @@
 <div class="dropdown-panel" id="filterDropdown"></div>
 </div>
 <button id="badgeToggle" class="badge-toggle">Tokens</button>
-<div style="position: relative;">
-<button onclick="toggleDropdown('spellDropdown')">Spell Lore</button>
-<div class="dropdown-panel" id="spellDropdown">
-<label><input data-img="icons/celestial.png" data-key="spell-Celestial" name="spell" type="radio"/>Celestial Manipulation</label>
-<label><input data-img="icons/primal-jungles.png" data-key="spell-Primal" name="spell" type="radio"/>Primal Jungles</label>
-</div>
-</div>
 </div>
 <div class="header-right">
 <button class="drag-toggle" id="dragToggleBtn" onclick="toggleDrag()">Déverrouiller</button>
@@ -276,10 +296,10 @@
 </header>
 <div class="section-top">
 <div class="top-card-slot" id="battle-slot-T1">
-<img alt="Battle Trait T1" onclick="openPopup('T1')" src="icons/battle-trait-T1.png"/>
+<img alt="Battle Trait 1" src="icons/battle-trait-1.png"/>
 </div>
 <div class="top-card-slot" id="battle-slot-T3">
-<img alt="Battle Trait T3" onclick="openPopup('T3')" src="icons/battle-trait-T3.png"/>
+<img alt="Battle Trait 2" src="icons/battle-trait-2.png"/>
 </div>
 <div class="top-card-slot">
 <img alt="Command Orders" onclick="location.href='commands.html'" src="icons/command-orders.png"/>
@@ -295,7 +315,14 @@
 <img alt="Trait" onclick="openPopup('trait')" src="icons/trait.png"/>
 <img class="unit-badge" src="icons/badge2.png" alt="Token Trait">
 </div>
-<div class="top-card-slot" id="slot-spell-lore"></div>
+<div class="top-card-slot split-slot" id="slot-spell-prayer">
+<div class="half-slot" id="slot-spell">
+<img alt="Spell Lore" onclick="openPopup('spell')" src="icons/spell-lore.png"/>
+</div>
+<div class="half-slot" id="slot-prayer">
+<img alt="Prayer Lore" onclick="openPopup('prayer')" src="icons/prayer-lore.png"/>
+</div>
+</div>
 <div class="top-card-slot" id="slot-monstruous">
 <img alt="Monstruous" onclick="openPopup('monstruous')" src="icons/monstruous.png"/>
 <img class="unit-badge" src="icons/badge4.png" alt="Token Monstruous">
@@ -308,12 +335,6 @@
 <div class="section-rest" id="cardContainer"></div>
 <div id="popup-overlay">
 <div class="popup-content" style="background: #222; padding: 20px; display: flex; flex-direction: column; gap: 20px; border-radius: 0.5em;">
-<div id="popup-t1t3" style="display:none; grid-template-columns: repeat(2, 1fr); gap: 20px;">
-<img onclick="selectTrait('1')" src="icons/battle-trait-1.png"/>
-<img onclick="selectTrait('2')" src="icons/battle-trait-2.png"/>
-<img onclick="selectTrait('3')" src="icons/battle-trait-3.png"/>
-<img onclick="selectTrait('4')" src="icons/battle-trait-4.png"/>
-</div>
 <div id="popup-battle" style="display:none; grid-template-columns: repeat(2, 1fr); gap: 20px;">
 <img onclick="selectGeneric('battle', 'eternalstar')" src="icons/eternalstar.png"/>
 <img onclick="selectGeneric('battle', 'shadowstrike')" src="icons/shadowstrike.png"/>
@@ -336,7 +357,14 @@
 <img onclick="selectTrait2('trait-hero6')" src="icons/trait-hero6.png"/>
 </div>
 <div id="popup-spells" style="display:none; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-<!-- Contenu dynamique des spells -->
+<img src="icons/spell-1.png" alt="Spell 1" />
+<img src="icons/spell-2.png" alt="Spell 2" />
+<img src="icons/spell-3.png" alt="Spell 3" />
+</div>
+<div id="popup-prayers" style="display:none; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+<img src="icons/prayer-1.png" alt="Prayer 1" />
+<img src="icons/prayer-2.png" alt="Prayer 2" />
+<img src="icons/prayer-3.png" alt="Prayer 3" />
 </div>
 <div id="popup-monstruous" style="display:none; grid-template-columns: repeat(3, 1fr); gap: 20px;">
 <img onclick="selectMonstruous('reset')" src="icons/monstruous.png" style="grid-column: 1 / -1; width: 33%; margin: 0 auto 20px auto;"/>
@@ -352,13 +380,13 @@
 </div>
 </div>
 </div>
+
 <script>
 let currentTraitTarget = null;
 let sortableInstance = null;
 let compositionMode = false;
 let badgeMode = false;
 let currentBadgeTarget = null;
-let currentSpellLore = null;
 
 window.addEventListener("beforeunload", () => {
  sessionStorage.setItem("scrollPos", window.scrollY);
@@ -367,32 +395,14 @@ window.addEventListener("beforeunload", () => {
 function openPopup(target) {
  currentTraitTarget = target;
  document.getElementById('popup-overlay').style.display = 'flex';
- ['popup-t1t3', 'popup-battle', 'popup-artefact', 'popup-trait', 'popup-spells', 'popup-monstruous', 'popup-badges'].forEach(id => {
+ ['popup-battle', 'popup-artefact', 'popup-trait', 'popup-spells', 'popup-prayers', 'popup-monstruous', 'popup-badges'].forEach(id => {
    document.getElementById(id).style.display = 'none';
  });
  
- if (target === 'T1' || target === 'T3') {
-   document.getElementById('popup-t1t3').style.display = 'grid';
- } else if (target === 'spell-lore') {
-   // Afficher les spells du lore actuellement sélectionné
-   const spellsDiv = document.getElementById('popup-spells');
-   spellsDiv.innerHTML = '';
-   
-   if (currentSpellLore === 'Celestial') {
-     spellsDiv.innerHTML = `
-       <img src="icons/celestial1.png" alt="Celestial Spell 1" />
-       <img src="icons/celestial2.png" alt="Celestial Spell 2" />
-       <img src="icons/celestial3.png" alt="Celestial Spell 3" />
-     `;
-   } else if (currentSpellLore === 'Primal') {
-     spellsDiv.innerHTML = `
-       <img src="icons/primal1.png" alt="Primal Spell 1" />
-       <img src="icons/primal2.png" alt="Primal Spell 2" />
-       <img src="icons/primal3.png" alt="Primal Spell 3" />
-     `;
-   }
-   
-   spellsDiv.style.display = 'grid';
+ if (target === 'spell') {
+   document.getElementById('popup-spells').style.display = 'grid';
+ } else if (target === 'prayer') {
+   document.getElementById('popup-prayers').style.display = 'grid';
  } else if (target === 'badge') {
    document.getElementById('popup-badges').style.display = 'grid';
  } else {
@@ -400,15 +410,6 @@ function openPopup(target) {
    if (document.getElementById(popupId)) {
      document.getElementById(popupId).style.display = 'grid';
    }
- }
-}
-
-function selectTrait(number) {
- if (currentTraitTarget) {
-   const slot = document.getElementById(`battle-slot-${currentTraitTarget}`);
-   slot.innerHTML = `<img src="icons/battle-trait-${number}.png" alt="Battle Trait" onclick="openPopup('${currentTraitTarget}')" />`;
-   localStorage.setItem(`trait-${currentTraitTarget}`, number);
-   document.getElementById('popup-overlay').style.display = 'none';
  }
 }
 
@@ -473,15 +474,6 @@ function toggleDropdown(id) {
  document.querySelectorAll('.dropdown-panel').forEach(drop => {
    drop.style.display = (drop.id === id && drop.style.display !== 'flex') ? 'flex' : 'none';
  });
-}
-
-function updateTopCard(slotId, imgPath) {
- const slot = document.getElementById(slotId);
- if (slotId === 'slot-spell-lore') {
-   slot.innerHTML = imgPath ? `<img src="${imgPath}" alt="Spell Lore" onclick="openPopup('spell-lore')" />` : '';
- } else {
-   slot.innerHTML = imgPath ? `<img src="${imgPath}" alt="">` : '';
- }
 }
 
 function toggleDrag() {
@@ -602,13 +594,11 @@ function resetAllData() {
  for (let i = 0; i < localStorage.length; i++) {
    const key = localStorage.key(i);
 
-   // Ne pas toucher aux sélections de battle, artefact, trait, spell-lore et monstruous
+   // Ne pas toucher aux sélections de battle, artefact, trait et monstruous
    const isProtected =
      key === "battle-selection" ||
      key === "artefact-selection" ||
      key === "trait-selection" ||
-     key === "spell-Celestial" ||
-     key === "spell-Primal" ||
      key === "monstruous-selection" ||
      key === "battle-eternalstar" ||
      key === "battle-shadowstrike" ||
@@ -622,9 +612,7 @@ function resetAllData() {
      key === "trait-reptiliancunning";
 
    if (
-     (key.startsWith("trait-T1") ||
-      key.startsWith("trait-T3") ||
-      key.startsWith("buttonsState-") ||
+     (key.startsWith("buttonsState-") ||
       key.startsWith("notesText-")) &&
       !isProtected
    ) {
@@ -639,7 +627,6 @@ function resetAllData() {
 // Définition de la liste des unités
 const unitList = [
  { id: "Brutes", name: "Brutes", img: "brutes.png", page: "brutes.html" },
-
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -655,8 +642,8 @@ document.addEventListener('DOMContentLoaded', () => {
    badgeBtn.addEventListener("click", toggleBadgeMode);
  }
 
- // Restauration des sélections pour battle seulement (artefact et trait ont maintenant leur propre logique)
-const battleSelected = localStorage.getItem("battle-selection");
+ // Restauration des sélections pour battle
+ const battleSelected = localStorage.getItem("battle-selection");
  if (battleSelected) {
    const slot = document.getElementById("slot-battle");
    if (slot) {
@@ -705,7 +692,7 @@ const battleSelected = localStorage.getItem("battle-selection");
    nameDiv.textContent = unit.name;
    
    a.innerHTML = `<img src="boutons/${unit.img}" alt="${unit.name}">`;
-     a.appendChild(nameDiv);
+   a.appendChild(nameDiv);
    
    // Vérifier et initialiser la visibilité
    const visible = localStorage.getItem("visible-" + unit.id);
@@ -772,44 +759,6 @@ const battleSelected = localStorage.getItem("battle-selection");
  const savedPos = sessionStorage.getItem("scrollPos");
  if (savedPos) window.scrollTo(0, parseInt(savedPos));
  
- // Restaure les traits de bataille
- ['T1', 'T3'].forEach(id => {
-   const saved = localStorage.getItem(`trait-${id}`);
-   if (saved) {
-     const slot = document.getElementById(`battle-slot-${id}`);
-     slot.innerHTML = `<img src="icons/battle-trait-${saved}.png" alt="Battle Trait" onclick="openPopup('${id}')" />`;
-   }
- });
- 
- // Configuration des sélections de sorts
- document.querySelectorAll('#spellDropdown input[type="radio"]').forEach(input => {
-   const key = input.dataset.key;
-   const img = input.dataset.img;
-   
-   if (localStorage.getItem(key) === "1") {
-     input.checked = true;
-     currentSpellLore = key.replace('spell-', '');
-     updateTopCard('slot-spell-lore', img);
-   }
-   
-   input.addEventListener("change", () => {
-     document.querySelectorAll('#spellDropdown input[type="radio"]').forEach(i => {
-       localStorage.setItem(i.dataset.key, "0");
-     });
-     localStorage.setItem(key, "1");
-     currentSpellLore = key.replace('spell-', '');
-     updateTopCard('slot-spell-lore', img);
-   });
- });
- 
- // Si aucun spell lore sélectionné, sélectionner le premier par défaut
- const spellInputs = document.querySelectorAll('#spellDropdown input[type="radio"]');
- const anySpellChecked = Array.from(spellInputs).some(input => input.checked);
- if (!anySpellChecked && spellInputs.length > 0) {
-   spellInputs[0].checked = true;
-   spellInputs[0].dispatchEvent(new Event('change'));
- }
- 
  loadCardOrder();
 });
 
@@ -842,5 +791,6 @@ if (sessionStorage.getItem('returnToRest')) {
  }
 }
 </script>
+
 </body>
 </html>
