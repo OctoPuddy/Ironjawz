@@ -278,6 +278,10 @@
      width: 180px !important;
      height: 180px !important;
    }
+   /* Style pour le popup battle avec 2 lignes de 3 */
+   #popup-battle {
+     grid-template-columns: repeat(3, 1fr) !important;
+   }
  </style>
 </head>
 <body>
@@ -335,11 +339,13 @@
 <div class="section-rest" id="cardContainer"></div>
 <div id="popup-overlay">
 <div class="popup-content" style="background: #222; padding: 20px; display: flex; flex-direction: column; gap: 20px; border-radius: 0.5em;">
-<div id="popup-battle" style="display:none; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+<div id="popup-battle" style="display:none; gap: 20px;">
 <img onclick="selectGeneric('battle', 'battle-1')" src="icons/battle-1.png"/>
 <img onclick="selectGeneric('battle', 'battle-2')" src="icons/battle-2.png"/>
 <img onclick="selectGeneric('battle', 'battle-3')" src="icons/battle-3.png"/>
 <img onclick="selectGeneric('battle', 'battle-4')" src="icons/battle-4.png"/>
+<img onclick="selectGeneric('battle', 'battle-5')" src="icons/battle-5.png"/>
+<img onclick="selectGeneric('battle', 'battle-6')" src="icons/battle-6.png"/>
 </div>
 <div id="popup-artefact" style="display:none; grid-template-columns: repeat(2, 1fr); gap: 20px;">
 <img onclick="selectArtefact('reset')" src="icons/artefact.png"/>
