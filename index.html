@@ -639,13 +639,16 @@ document.addEventListener('DOMContentLoaded', () => {
  }
 
  // Restauration des sélections pour battle
- const battleSelected = localStorage.getItem("battle-selection");
- if (battleSelected) {
-   const slot = document.getElementById("slot-battle");
-   if (slot) {
-     slot.innerHTML = `<img src="icons/${battleSelected}.png" alt="battle" onclick="openPopup('battle')" />`; 
-   }
- }
+const battleSelected = localStorage.getItem("battle-selection");
+if (battleSelected) {
+  const slot = document.getElementById("slot-battle");
+  if (slot) {
+    slot.innerHTML = `<img src="icons/${battleSelected}.png" alt="battle" onclick="openPopup('battle')" />`;
+  }
+} else {
+  // Si rien n'est sauvegardé, garder l'image par défaut du HTML (battle-1.png)
+  // Pas besoin de code ici, l'image par défaut est déjà dans le HTML
+}
  
  // Restauration de la sélection artefact
  const artefactSelection = localStorage.getItem('artefact-selection');
