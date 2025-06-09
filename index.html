@@ -602,20 +602,11 @@ function resetAllData() {
 
    // Ne pas toucher aux sélections de battle, artefact, trait et monstruous
    const isProtected =
-     key === "battle-selection" ||
-     key === "artefact-selection" ||
-     key === "trait-selection" ||
-     key === "monstruous-selection" ||
-     key === "battle-1" ||
-     key === "battle-2" ||
-     key === "battle-3" ||
-     key === "battle-4" ||
-     key === "artefact-artefact1" ||
-     key === "artefact-artefact2" ||
-     key === "artefact-artefact3" ||
-     key === "trait-beastmaster" ||
-     key === "trait-beingofthestars" ||
-     key === "trait-reptiliancunning";
+const isProtected =
+  key === "battle-selection" ||
+  key === "artefact-selection" ||
+  key === "trait-selection" ||
+  key === "monstruous-selection";
 
    if (
      (key.startsWith("buttonsState-") ||
