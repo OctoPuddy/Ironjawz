@@ -305,7 +305,7 @@
 <img alt="Command Orders" onclick="location.href='commands.html'" src="icons/command-orders.png"/>
 </div>
 <div class="top-card-slot" id="slot-battle">
-<img alt="Battle Formation" onclick="openPopup('battle')" src="icons/eternalstar.png"/>
+<img alt="Battle Formation" onclick="openPopup('battle')" src="icons/battle-1.png"/>
 </div>
 <div class="top-card-slot" id="slot-artefact">
 <img alt="Artefact" onclick="openPopup('artefact')" src="icons/artefact.png"/>
@@ -336,10 +336,10 @@
 <div id="popup-overlay">
 <div class="popup-content" style="background: #222; padding: 20px; display: flex; flex-direction: column; gap: 20px; border-radius: 0.5em;">
 <div id="popup-battle" style="display:none; grid-template-columns: repeat(2, 1fr); gap: 20px;">
-<img onclick="selectGeneric('battle', 'eternalstar')" src="icons/eternalstar.png"/>
-<img onclick="selectGeneric('battle', 'shadowstrike')" src="icons/shadowstrike.png"/>
-<img onclick="selectGeneric('battle', 'sunclaw')" src="icons/sunclaw.png"/>
-<img onclick="selectGeneric('battle', 'thunderquake')" src="icons/thunderquake.png"/>
+<img onclick="selectGeneric('battle', 'battle-1')" src="icons/battle-1.png"/>
+<img onclick="selectGeneric('battle', 'battle-2')" src="icons/battle-2.png"/>
+<img onclick="selectGeneric('battle', 'battle-3')" src="icons/battle-3.png"/>
+<img onclick="selectGeneric('battle', 'battle-4')" src="icons/battle-4.png"/>
 </div>
 <div id="popup-artefact" style="display:none; grid-template-columns: repeat(2, 1fr); gap: 20px;">
 <img onclick="selectArtefact('reset')" src="icons/artefact.png"/>
@@ -600,10 +600,10 @@ function resetAllData() {
      key === "artefact-selection" ||
      key === "trait-selection" ||
      key === "monstruous-selection" ||
-     key === "battle-eternalstar" ||
-     key === "battle-shadowstrike" ||
-     key === "battle-sunclaw" ||
-     key === "battle-thunderquake" ||
+     key === "battle-1" ||
+     key === "battle-2" ||
+     key === "battle-3" ||
+     key === "battle-4" ||
      key === "artefact-artefact1" ||
      key === "artefact-artefact2" ||
      key === "artefact-artefact3" ||
