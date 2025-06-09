@@ -647,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
  if (battleSelected) {
    const slot = document.getElementById("slot-battle");
    if (slot) {
-     slot.innerHTML = `<img src="icons/${battleSelected}.png" alt="battle" onclick="openPopup('battle')" />`;
+     slot.innerHTML = `<img src="icons/${type}-${imageKey}.png" alt="${type}" onclick="openPopup('${type}')" />`; 
    }
  }
  
