@@ -198,21 +198,45 @@
      opacity: 1;
    }
    
-/* Style pour les badges sur les vignettes */
-.unit-badge {
- position: absolute;
- bottom: 5px;
- right: 5px;
- width: 40%;
- height: 40%;
- max-width: 120px;  /* Limite la taille max pour les grandes vignettes */
- max-height: 120px;
- object-fit: contain;
- z-index: 5;
- pointer-events: none;
+/* Container pour plusieurs badges (section du bas uniquement) */
+.badges-container {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 5;
+  pointer-events: none;
 }
 
-/* Style pour les badges sur les vignettes du haut */
+/* Taille par défaut (1 badge) */
+.unit-badge {
+  width: 120px;
+  height: 120px;
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+  transition: all 0.2s ease;
+}
+
+/* 2 badges = plus petits */
+.badges-container:has(.unit-badge:nth-child(2)) .unit-badge {
+  width: 90px;
+  height: 90px;
+  max-width: 90px;
+  max-height: 90px;
+}
+
+/* 3 badges = encore plus petits */
+.badges-container:has(.unit-badge:nth-child(3)) .unit-badge {
+  width: 60px;
+  height: 60px;
+  max-width: 60px;
+  max-height: 60px;
+}
+
+/* Pour les vignettes du haut, badges fixes (pas de gestion multiple) */
 .top-card-slot .unit-badge {
   position: absolute;
   bottom: 5px;
@@ -332,7 +356,7 @@
 <img class="unit-badge" src="icons/badge4.png" alt="Token Monstruous">
 </div>
 <div class="top-card-slot" id="slot-map">
-<img alt="Map" onclick="location.href='https://wahapedia.ru/aos4/the-rules/general-s-handbook-2024-25/#Border-War'" src="icons/map.png"/>
+<img alt="Map" onclick="location.href='map.html'" src="icons/map.png"/>
 </div>
 </div>
 <div class="separator">Armée</div>
@@ -459,21 +483,78 @@ function selectMonstruous(number) {
 }
 
 function selectBadge(number) {
- if (currentBadgeTarget) {
-   const existingBadge = currentBadgeTarget.querySelector('.unit-badge');
-   if (existingBadge) {
-     existingBadge.remove();
-   }
-   
-   const badge = document.createElement('img');
-   badge.className = 'unit-badge';
-   badge.src = `icons/badge${number}.png`;
-   currentBadgeTarget.appendChild(badge);
-   
-   // Sauvegarder le badge choisi
-   localStorage.setItem(`badge-${currentBadgeTarget.dataset.id}`, number);
- }
- document.getElementById('popup-overlay').style.display = 'none';
+  if (currentBadgeTarget) {
+    // Récupérer ou créer le container de badges
+    let badgesContainer = currentBadgeTarget.querySelector('.badges-container');
+    if (!badgesContainer) {
+      badgesContainer = document.createElement('div');
+      badgesContainer.className = 'badges-container';
+      currentBadgeTarget.appendChild(badgesContainer);
+    }
+    
+    // Vérifier si ce badge existe déjà
+    const existingBadge = badgesContainer.querySelector(`img[src="icons/badge${number}.png"]`);
+    if (existingBadge) {
+      // Si le badge existe, le retirer
+      existingBadge.remove();
+    } else {
+      // Si on a déjà 3 badges, retirer le premier
+      const badges = badgesContainer.querySelectorAll('.unit-badge');
+      if (badges.length >= 3) {
+        badges[0].remove();
+      }
+      
+      // Ajouter le nouveau badge
+      const badge = document.createElement('img');
+      badge.className = 'unit-badge';
+      badge.src = `icons/badge${number}.png`;
+      badgesContainer.appendChild(badge);
+    }
+    
+    // Nettoyer si le container est vide
+    if (badgesContainer.children.length === 0) {
+      badgesContainer.remove();
+    }
+    
+    // Sauvegarder les badges
+    saveBadges(currentBadgeTarget);
+  }
+  document.getElementById('popup-overlay').style.display = 'none';
+}
+
+function saveBadges(target) {
+  const badgesContainer = target.querySelector('.badges-container');
+  const badges = [];
+  if (badgesContainer) {
+    badgesContainer.querySelectorAll('.unit-badge').forEach(badge => {
+      const src = badge.src;
+      const number = src.match(/badge(\d+)\.png/)?.[1];
+      if (number) badges.push(number);
+    });
+  }
+  localStorage.setItem(`badges-${target.dataset.id}`, JSON.stringify(badges));
+}
+
+function loadBadges(target) {
+  const savedBadges = localStorage.getItem(`badges-${target.dataset.id}`);
+  if (savedBadges) {
+    const badges = JSON.parse(savedBadges);
+    if (badges.length > 0) {
+      let badgesContainer = target.querySelector('.badges-container');
+      if (!badgesContainer) {
+        badgesContainer = document.createElement('div');
+        badgesContainer.className = 'badges-container';
+        target.appendChild(badgesContainer);
+      }
+      
+      badges.forEach(badgeNumber => {
+        const badge = document.createElement('img');
+        badge.className = 'unit-badge';
+        badge.src = `icons/badge${badgeNumber}.png`;
+        badgesContainer.appendChild(badge);
+      });
+    }
+  }
 }
 
 function toggleDropdown(id) {
@@ -601,11 +682,11 @@ function resetAllData() {
    const key = localStorage.key(i);
 
    // Ne pas toucher aux sélections de battle, artefact, trait et monstruous
-const isProtected =
-  key === "battle-selection" ||
-  key === "artefact-selection" ||
-  key === "trait-selection" ||
-  key === "monstruous-selection";
+   const isProtected =
+     key === "battle-selection" ||
+     key === "artefact-selection" ||
+     key === "trait-selection" ||
+     key === "monstruous-selection";
 
    if (
      (key.startsWith("buttonsState-") ||
@@ -742,15 +823,9 @@ if (battleSelected) {
  
  // Restaurer les badges sauvegardés
  unitList.forEach(unit => {
-   const badgeNumber = localStorage.getItem(`badge-${unit.id}`);
-   if (badgeNumber) {
-     const card = document.querySelector(`.image-button[data-id="${unit.id}"]`);
-     if (card) {
-       const badge = document.createElement('img');
-       badge.className = 'unit-badge';
-       badge.src = `icons/badge${badgeNumber}.png`;
-       card.appendChild(badge);
-     }
+   const card = document.querySelector(`.image-button[data-id="${unit.id}"]`);
+   if (card) {
+     loadBadges(card);
    }
  });
  
@@ -769,13 +844,8 @@ document.addEventListener('click', (e) => {
  
  // Fermer le popup en cliquant en dehors
  if (e.target.id === 'popup-overlay') {
-   // Retirer le badge si on clique hors du popup en mode badge
+   // En mode badge, juste fermer sans supprimer les badges
    if (currentBadgeTarget) {
-     const existingBadge = currentBadgeTarget.querySelector('.unit-badge');
-     if (existingBadge) {
-       existingBadge.remove();
-       localStorage.removeItem(`badge-${currentBadgeTarget.dataset.id}`);
-     }
      currentBadgeTarget = null;
    }
    e.target.style.display = 'none';
